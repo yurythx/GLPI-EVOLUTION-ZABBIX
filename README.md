@@ -15,6 +15,7 @@ O projeto foi desenhado para ser modular, escalável e seguro, utilizando segmen
 6. [Pós-Instalação (Setup Inicial)](#-pós-instalação-setup-inicial)
 7. [Estrutura de Diretórios](#-estrutura-de-diretórios)
 8. [Troubleshooting](#-troubleshooting)
+9. [Integração WhatsApp -> GLPI](#-integração-whatsapp---glpi)
 
 ---
 
@@ -143,109 +144,82 @@ Para rodar esta stack, seu servidor deve atender aos requisitos mínimos:
 
 ### Opção A: Deploy Padrão (Docker Compose)
 
-1.  **Clone o Repositório:**
+1.  Clone este repositório:
     ```bash
-    git clone https://seu-git/projeto-itsm.git
-    cd projeto-itsm
+    git clone https://github.com/seu-usuario/GLPI-EVOLUTION-ZABBIX.git
+    cd GLPI-EVOLUTION-ZABBIX
     ```
 
-2.  **Configuração de Ambiente (.env):**
-    O arquivo `.env` na raiz contém todas as senhas e chaves. **ALTERE AS SENHAS PADRÃO** antes de subir em produção.
+2.  Configure as variáveis de ambiente:
     ```bash
-    # Exemplo de variáveis críticas
-    POSTGRES_PASSWORD=sua_senha_segura
-    MINIO_ROOT_PASSWORD=sua_senha_minio
-    SECRET_KEY_BASE=gere_uma_hash_longa_para_o_chatwoot
+    cp .env.example .env
+    # Edite o .env se necessário (senhas, chaves de API)
     ```
 
-3.  **Iniciar a Stack:**
-    Utilizamos um arquivo `compose.yaml` central que importa os módulos individuais.
+3.  Inicie a stack:
     ```bash
     docker compose up -d
     ```
 
-4.  **Verificar Status:**
-    ```bash
-    docker compose ps
-    ```
-    *Aguarde alguns minutos até que todos os serviços estejam com status `(healthy)`.*
-
 ### Opção B: Deploy no aaPanel (Ubuntu/CentOS)
 
-O **aaPanel** é um painel de controle popular que gerencia Nginx/Apache. Como esta stack usa Docker, o aaPanel atuará principalmente como **Proxy Reverso** e gerenciador de Firewall.
+Se você utiliza o painel de gerenciamento **aaPanel**, você tem duas opções de acesso:
 
-1.  **Instale o Docker via aaPanel:**
-    *   Vá em **App Store** > Procure por **Docker** > Instale a versão mais recente.
+#### 1. Acesso Direto via IP (Sem Proxy Reverso)
+Para testar a stack sem configurar domínios, você pode acessar os serviços diretamente pelo IP do servidor.
+**Importante:** Você precisa liberar as seguintes portas no firewall do aaPanel e do seu provedor de Cloud (AWS/DigitalOcean/etc):
+*   `3000` (Chatwoot)
+*   `18080` (GLPI)
+*   `18081` (Zabbix)
+*   `5678` (n8n)
+*   `8081` (Evolution API)
+*   `9004/9005` (MinIO)
 
-2.  **Clone e Suba a Stack via Terminal:**
-    *   Acesse o terminal do servidor (via SSH ou Terminal do aaPanel).
-    *   Navegue para `/www/wwwroot/` (recomendado para organizar).
-    *   Siga os passos 1, 2 e 3 da "Opção A" acima.
+#### 2. Configuração com Proxy Reverso (Com Domínios - Recomendado para Produção)
+Quando quiser configurar domínios (SSL/HTTPS), siga estes passos:
 
-3.  **Configuração de Domínios e Proxy Reverso:**
-    Para cada serviço, crie um site no aaPanel e aponte para a porta local do container.
+1.  Instale o "Docker Manager" na loja de aplicativos do aaPanel.
+2.  Faça o upload dos arquivos deste projeto para uma pasta (ex: `/www/wwwroot/stack-itsm`).
+3.  Pelo terminal do aaPanel, navegue até a pasta e rode `docker compose up -d`.
+4.  Crie sites (domínios ou subdomínios) para cada serviço e configure o **Reverse Proxy**:
 
-    | Serviço | Porta Local | Configuração no aaPanel |
-    | :--- | :--- | :--- |
-    | **Chatwoot** | `3000` | Crie site `chat.seudominio.com` > Config > Reverse Proxy > Target: `http://127.0.0.1:3000` |
-    | **GLPI** | `18080` | Crie site `suporte.seudominio.com` > Config > Reverse Proxy > Target: `http://127.0.0.1:18080` |
-    | **Zabbix** | `18081` | Crie site `monitor.seudominio.com` > Config > Reverse Proxy > Target: `http://127.0.0.1:18081` |
-    | **n8n** | `5678` | Crie site `n8n.seudominio.com` > Config > Reverse Proxy > Target: `http://127.0.0.1:5678` |
-    | **Evolution API**| `8081` | Crie site `api.seudominio.com` > Config > Reverse Proxy > Target: `http://127.0.0.1:8081` |
-    | **MinIO API** | `9004` | Crie site `s3.seudominio.com` > Config > Reverse Proxy > Target: `http://127.0.0.1:9004` |
-    | **MinIO Console**| `9005` | Crie site `minio.seudominio.com` > Config > Reverse Proxy > Target: `http://127.0.0.1:9005` |
+| Serviço | Porta Local | Configuração no aaPanel |
+| :--- | :--- | :--- |
+| **Chatwoot** | `3000` | Crie site `chat.seudominio.com` > Config > Reverse Proxy > Target: `http://127.0.0.1:3000` |
+| **GLPI** | `18080` | Crie site `suporte.seudominio.com` > Config > Reverse Proxy > Target: `http://127.0.0.1:18080` |
+| **Zabbix** | `18081` | Crie site `monitor.seudominio.com` > Config > Reverse Proxy > Target: `http://127.0.0.1:18081` |
+| **n8n** | `5678` | Crie site `n8n.seudominio.com` > Config > Reverse Proxy > Target: `http://127.0.0.1:5678` |
+| **Evolution API**| `8081` | Crie site `api.seudominio.com` > Config > Reverse Proxy > Target: `http://127.0.0.1:8081` |
+| **MinIO API** | `9004` | Crie site `s3.seudominio.com` > Config > Reverse Proxy > Target: `http://127.0.0.1:9004` |
+| **MinIO Console**| `9005` | Crie site `minio.seudominio.com` > Config > Reverse Proxy > Target: `http://127.0.0.1:9005` |
 
-4.  **WebSocket (Importante para Chatwoot/Evolution):**
-    *   No arquivo de configuração do Nginx do aaPanel (Config > Config file), adicione suporte a Upgrade de headers para conexões WebSocket funcionarem corretamente, caso o Proxy reverso padrão não configure automaticamente.
 
 ---
 
-## 🛠 Pós-Instalação (Setup Inicial)
+## 🏁 Pós-Instalação (Setup Inicial)
 
-Após subir os containers, você precisa finalizar a configuração via navegador:
+Após subir os containers, aguarde alguns minutos para que os bancos de dados sejam inicializados.
 
-### 1. Chatwoot (`http://localhost:3000`)
-*   Acesse a URL.
-*   Crie a conta de administrador (email/senha).
-*   *Nota: O banco já foi inicializado via script.*
-
-### 2. GLPI (`http://localhost:18080`)
-*   Selecione o idioma.
-*   Aceite a licença.
-*   **Instalar** > Verificar requisitos.
-*   **Configuração do Banco:**
-    *   Servidor: `glpi-db`
-    *   Usuário: `glpi_user`
-    *   Senha: (ver no .env, padrão `sua_senha_glpi_db`)
-*   Selecione o banco `glpi_db`.
-
-### 3. Zabbix (`http://localhost:18081`)
-*   **Database Host:** `zabbix-db`
-*   **Database Name:** `zabbix_db`
-*   **User:** `zabbix_user`
-*   **Password:** (ver no .env, padrão `sua_senha_zabbix_db`)
-
-### 4. Evolution API (`http://localhost:8081`)
-*   A API é "Headless" (sem interface visual nativa complexa). Use o **n8n** ou Postman para interagir.
-*   **Global API Key:** Definida no `.env` (`AUTHENTICATION_API_KEY`).
+*   **Acesse o GLPI:** `http://localhost:18080` (User: `glpi` / Pass: `glpi`)
+*   **Acesse o Chatwoot:** `http://localhost:3000` (Crie sua conta de admin na tela inicial)
+*   **Acesse o Zabbix:** `http://localhost:18081` (User: `Admin` / Pass: `zabbix`)
+*   **Acesse o n8n:** `http://localhost:5678` (Crie seu usuário admin)
 
 ---
 
 ## 📂 Estrutura de Diretórios
 
 ```plaintext
-/
-├── compose.yaml          # Arquivo mestre de orquestração
+.
+├── compose.yaml          # Arquivo central de orquestração
 ├── .env                  # Variáveis de ambiente globais
-├── README.md             # Esta documentação
+├── README.md             # Documentação do projeto
 │
 ├── Chatwoot/
-│   ├── compose.yaml      # Definição do serviço Chatwoot
-│   └── .env              # Variáveis específicas do Chatwoot
+│   └── compose.yaml      # Definição do Chatwoot + Postgres/Redis dedicados
 │
 ├── GLPI/
-│   ├── glpi.yml          # Definição do serviço GLPI + MariaDB
-│   └── .env              # Variáveis específicas
+│   └── glpi.yml          # Definição do GLPI + MariaDB
 │
 ├── Zabbix/
 │   └── zabbix.yml        # Definição do Zabbix Server/Web/Agent
@@ -285,3 +259,11 @@ docker compose logs glpi-db
 
 ### Portas Ocupadas
 Se receber erro `Bind for 0.0.0.0:8080 failed: port is already allocated`, edite o `.env` ou os arquivos `compose.yaml` para alterar a porta externa (ex: mudar `18080:80` para `18081:80`).
+
+---
+
+## 📲 Integração WhatsApp -> GLPI
+
+Para configurar a automação completa de abertura de chamados via WhatsApp, consulte o guia detalhado que preparamos. Ele cobre desde a conexão do número na Evolution API até a criação de Webhooks no n8n.
+
+👉 **[Clique aqui para acessar o Guia de Integração: WhatsApp (Evolution API) -> Chatwoot -> n8n -> GLPI](./INTEGRACAO_WHATSAPP.md)**
