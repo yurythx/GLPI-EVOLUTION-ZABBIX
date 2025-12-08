@@ -1,6 +1,7 @@
 services:
   n8n:
     image: n8nio/n8n:1.113.3
+    container_name: n8n
     depends_on:
       postgres_n8n:
         condition: service_healthy
@@ -12,8 +13,7 @@ services:
       - n8n_data:/home/node/.n8n
       - tmp_data:/home/n8n/.tmp
     networks:
-      - app_network
-      - itsm_shared_net
+      - stack_network
     logging:
       driver: "json-file"
       options:
@@ -73,7 +73,7 @@ services:
     volumes:
       - postgres_n8n_data:/var/lib/postgresql/data
     networks:
-      - app_network
+      - stack_network
     restart: always
     logging:
       driver: "json-file"
@@ -102,7 +102,7 @@ services:
     volumes:
       - redis_n8n_data:/data
     networks:
-      - app_network
+      - stack_network
     restart: always
     logging:
       driver: "json-file"
@@ -132,7 +132,5 @@ volumes:
   redis_n8n_data:
 
 networks:
-  app_network:
-    external: true # Assuming it's shared with Evolution, or define it if local
-  itsm_shared_net:
+  stack_network:
     external: true

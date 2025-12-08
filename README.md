@@ -20,16 +20,11 @@ O projeto foi desenhado para ser modular, escalável e seguro, utilizando segmen
 
 ## 🏛 Arquitetura da Solução
 
-A infraestrutura é dividida em **duas redes virtuais** isoladas para garantir segurança e organização lógica do tráfego:
+A infraestrutura utiliza uma **rede virtual unificada** (`stack_network`) para facilitar a comunicação entre todos os serviços, mantendo a organização lógica através da orquestração via Docker Compose.
 
-1.  **`app_network` (Frontend/Integration):**
-    *   Focada na camada de borda e integrações externas (WhatsApp).
-    *   Contém: Evolution API, MinIO e a "perna" de entrada do n8n.
-2.  **`itsm_shared_net` (Backend/Management):**
-    *   Focada nas aplicações de gestão interna.
-    *   Contém: GLPI, Zabbix, Chatwoot e a "perna" de saída do n8n.
+*   **`stack_network`:** Rede compartilhada por todos os componentes (GLPI, Zabbix, Chatwoot, Evolution API, MinIO e n8n), permitindo comunicação direta e eficiente via DNS interno do Docker.
 
-O **n8n** atua como o **Hub de Integração**, sendo o único serviço conectado a ambas as redes, permitindo que eventos externos (ex: mensagem no WhatsApp) disparem ações internas (ex: abrir ticket no GLPI ou criar conversa no Chatwoot), sem expor os serviços internos diretamente à camada de API pública.
+O **n8n** atua como o **Hub de Integração**, orquestrando os fluxos de dados entre os serviços.
 
 ---
 
@@ -41,41 +36,37 @@ Abaixo, o diagrama detalhado das conexões, redes e fluxo de dados entre os serv
 graph TD
     %% Definição de Estilos
     classDef external fill:#f9f,stroke:#333,stroke-width:2px;
-    classDef appNet fill:#e1f5fe,stroke:#0277bd,stroke-width:2px,stroke-dasharray: 5, 5;
-    classDef itsmNet fill:#e8f5e9,stroke:#2e7d32,stroke-width:2px,stroke-dasharray: 5, 5;
+    classDef internal fill:#e1f5fe,stroke:#0277bd,stroke-width:2px;
     classDef db fill:#fff3e0,stroke:#ef6c00,stroke-width:1px;
 
-    %% Subgraph: App Network
-    subgraph App_Network ["☁️ Rede: app_network (172.18.x.x)"]
+    %% Atores Externos
+    User((Usuário / Admin)):::external
+    Customer((Cliente WhatsApp)):::external
+
+    %% Subgraph: Stack Network
+    subgraph Stack_Network ["☁️ Rede Unificada: stack_network"]
         direction TB
-        EvolAPI["📱 Evolution API (Porta: 8081)"]:::appNet
-        MinIO["🗄️ MinIO S3 (Porta: 9004/9005)"]:::appNet
+        
+        %% Serviços
+        EvolAPI[📱 Evolution API<br/>(Porta: 8081)]:::internal
+        MinIO[🗄️ MinIO S3<br/>(Porta: 9004/9005)]:::internal
+        n8n[⚡ n8n Workflow<br/>(Porta: 5678)]:::internal
+        GLPI[🛠️ GLPI<br/>(Porta: 18080)]:::internal
+        Zabbix[📈 Zabbix Server/Web<br/>(Porta: 18081)]:::internal
+        Chatwoot[💬 Chatwoot<br/>(Porta: 3000)]:::internal
+
+        %% Bancos de Dados e Cache
         RedisEvol[(Redis Evol)]:::db
         PostgresEvol[(Postgres Evol)]:::db
-    end
-
-    %% Subgraph: ITSM Network
-    subgraph ITSM_Network ["🏢 Rede: itsm_shared_net (172.19.x.x)"]
-        direction TB
-        GLPI["🛠️ GLPI (Porta: 18080)"]:::itsmNet
-        Zabbix["📈 Zabbix Server/Web (Porta: 18081)"]:::itsmNet
-        Chatwoot["💬 Chatwoot (Porta: 3000)"]:::itsmNet
-        
-        %% Bancos de Dados ITSM
+        PostgresN8N[(Postgres n8n)]:::db
+        RedisN8N[(Redis n8n)]:::db
         MariaDB[(MariaDB GLPI)]:::db
         PostgresZabbix[(Postgres Zabbix)]:::db
         PostgresChat[(Postgres Chatwoot)]:::db
         RedisChat[(Redis Chatwoot)]:::db
     end
 
-    %% O Hub Central (n8n) conecta as duas redes
-    n8n["⚡ n8n Workflow (Porta: 5678)"]:::external
-    PostgresN8N[(Postgres n8n)]:::db
-
     %% Conexões Externas
-    User((Usuário / Admin)):::external
-    Customer((Cliente WhatsApp)):::external
-
     User -->|Acesso Web| GLPI
     User -->|Acesso Web| Zabbix
     User -->|Acesso Web| Chatwoot
@@ -86,12 +77,14 @@ graph TD
     %% Conexões Internas (Serviços)
     EvolAPI --> RedisEvol
     EvolAPI --> PostgresEvol
+    EvolAPI -->|Integração Nativa| Chatwoot
     
-    n8n -->|Webhooks/API| EvolAPI
+    n8n -->|Orquestração| EvolAPI
     n8n -->|API| Chatwoot
     n8n -->|API| GLPI
     n8n -->|Webhooks| Zabbix
     n8n --> PostgresN8N
+    n8n --> RedisN8N
 
     Chatwoot --> PostgresChat
     Chatwoot --> RedisChat

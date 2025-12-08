@@ -1,6 +1,7 @@
 services:
   minio:
     image: minio/minio:RELEASE.2024-01-31T20-20-33Z
+    container_name: minio
     command: server /data --console-address ":9001"
     ports:
       - "${S3_PORT:-9004}:9000"   # API
@@ -17,7 +18,7 @@ services:
         max-size: "10m"
         max-file: "3"
     networks:
-      - app_network
+      - stack_network
 
   createbuckets:
     image: minio/mc:latest
@@ -51,11 +52,11 @@ services:
 
         exit 0
     networks:
-      - app_network
+      - stack_network
 
 volumes:
   s3_data:
 
 networks:
-  app_network:
+  stack_network:
     external: true

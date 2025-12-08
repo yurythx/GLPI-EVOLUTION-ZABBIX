@@ -9,7 +9,5 @@ include:
   - n8n/compose.yaml
 
 networks:
-  itsm_shared_net:
-    external: true
-  app_network:
+  stack_network:
     external: true

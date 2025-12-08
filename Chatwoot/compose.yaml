@@ -10,7 +10,7 @@ services:
     volumes:
       - chatwoot_data:/app/storage
     networks:
-      - itsm_shared_net
+      - stack_network
     logging:
       driver: "json-file"
       options:
@@ -67,7 +67,7 @@ services:
       - POSTGRES_USER=postgres
       - POSTGRES_PASSWORD=postgres
     networks:
-      - itsm_shared_net
+      - stack_network
     logging:
       driver: "json-file"
       options:
@@ -82,7 +82,7 @@ services:
     volumes:
       - redis_data:/data
     networks:
-      - itsm_shared_net
+      - stack_network
     logging:
       driver: "json-file"
       options:
@@ -90,7 +90,7 @@ services:
         max-file: "3"
 
 networks:
-  itsm_shared_net:
+  stack_network:
     external: true
 
 volumes:

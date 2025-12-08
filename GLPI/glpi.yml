@@ -14,7 +14,7 @@ services:
     volumes:
       - glpi_db_data:/var/lib/mysql
     networks:
-      - itsm_shared_net
+      - stack_network
     environment:
       TZ: America/Sao_Paulo
     healthcheck:
@@ -46,7 +46,7 @@ services:
     volumes:
       - glpi_files:/var/glpi
     networks:
-      - itsm_shared_net
+      - stack_network
     deploy:
       resources:
         limits:
@@ -66,5 +66,5 @@ volumes:
   glpi_files:
 
 networks:
-  itsm_shared_net:
+  stack_network:
     external: true

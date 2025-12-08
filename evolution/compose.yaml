@@ -30,7 +30,7 @@ services:
       - TYPEBOT_ENABLED=${TYPEBOT_ENABLED}
       - TYPEBOT_API_VERSION=${TYPEBOT_API_VERSION}
       - CHATWOOT_ENABLED=${CHATWOOT_ENABLED}
-      - CHATWOOT_URL=http://chatwoot-rails:3000
+      - CHATWOOT_URL=http://chatwoot_web:3000
       - CHATWOOT_MESSAGE_READ=${CHATWOOT_MESSAGE_READ}
       - CHATWOOT_IMPORT_DATABASE_CONNECTION_URI=${CHATWOOT_IMPORT_DATABASE_CONNECTION_URI}
       - CHATWOOT_IMPORT_PLACEHOLDER_MEDIA_MESSAGE=${CHATWOOT_IMPORT_PLACEHOLDER_MEDIA_MESSAGE}
@@ -40,7 +40,7 @@ services:
       - CACHE_REDIS_SAVE_INSTANCES=${CACHE_REDIS_SAVE_INSTANCES}
       - CACHE_LOCAL_ENABLED=${CACHE_LOCAL_ENABLED}
     networks:
-      - app_network
+      - stack_network
     ports:
       - "${EVOLUTION_PORT}:8080"
     volumes:
@@ -76,7 +76,7 @@ services:
     volumes:
       - postgres_evolution_data:/var/lib/postgresql/data
     networks:
-      - app_network
+      - stack_network
     restart: always
     logging:
       driver: "json-file"
@@ -105,7 +105,7 @@ services:
     volumes:
       - redis_evolution_data:/data
     networks:
-      - app_network
+      - stack_network
     restart: always
     logging:
       driver: "json-file"
@@ -134,5 +134,5 @@ volumes:
   redis_evolution_data:
 
 networks:
-  app_network:
+  stack_network:
     external: true
