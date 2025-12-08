@@ -141,6 +141,8 @@ Para rodar esta stack, seu servidor deve atender aos requisitos mínimos:
 
 ## 🚀 Instalação e Deploy
 
+### Opção A: Deploy Padrão (Docker Compose)
+
 1.  **Clone o Repositório:**
     ```bash
     git clone https://seu-git/projeto-itsm.git
@@ -167,6 +169,34 @@ Para rodar esta stack, seu servidor deve atender aos requisitos mínimos:
     docker compose ps
     ```
     *Aguarde alguns minutos até que todos os serviços estejam com status `(healthy)`.*
+
+### Opção B: Deploy no aaPanel (Ubuntu/CentOS)
+
+O **aaPanel** é um painel de controle popular que gerencia Nginx/Apache. Como esta stack usa Docker, o aaPanel atuará principalmente como **Proxy Reverso** e gerenciador de Firewall.
+
+1.  **Instale o Docker via aaPanel:**
+    *   Vá em **App Store** > Procure por **Docker** > Instale a versão mais recente.
+
+2.  **Clone e Suba a Stack via Terminal:**
+    *   Acesse o terminal do servidor (via SSH ou Terminal do aaPanel).
+    *   Navegue para `/www/wwwroot/` (recomendado para organizar).
+    *   Siga os passos 1, 2 e 3 da "Opção A" acima.
+
+3.  **Configuração de Domínios e Proxy Reverso:**
+    Para cada serviço, crie um site no aaPanel e aponte para a porta local do container.
+
+    | Serviço | Porta Local | Configuração no aaPanel |
+    | :--- | :--- | :--- |
+    | **Chatwoot** | `3000` | Crie site `chat.seudominio.com` > Config > Reverse Proxy > Target: `http://127.0.0.1:3000` |
+    | **GLPI** | `18080` | Crie site `suporte.seudominio.com` > Config > Reverse Proxy > Target: `http://127.0.0.1:18080` |
+    | **Zabbix** | `18081` | Crie site `monitor.seudominio.com` > Config > Reverse Proxy > Target: `http://127.0.0.1:18081` |
+    | **n8n** | `5678` | Crie site `n8n.seudominio.com` > Config > Reverse Proxy > Target: `http://127.0.0.1:5678` |
+    | **Evolution API**| `8081` | Crie site `api.seudominio.com` > Config > Reverse Proxy > Target: `http://127.0.0.1:8081` |
+    | **MinIO API** | `9004` | Crie site `s3.seudominio.com` > Config > Reverse Proxy > Target: `http://127.0.0.1:9004` |
+    | **MinIO Console**| `9005` | Crie site `minio.seudominio.com` > Config > Reverse Proxy > Target: `http://127.0.0.1:9005` |
+
+4.  **WebSocket (Importante para Chatwoot/Evolution):**
+    *   No arquivo de configuração do Nginx do aaPanel (Config > Config file), adicione suporte a Upgrade de headers para conexões WebSocket funcionarem corretamente, caso o Proxy reverso padrão não configure automaticamente.
 
 ---
 
