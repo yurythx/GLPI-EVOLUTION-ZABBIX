@@ -52,8 +52,8 @@ graph TD
     %% Subgraph: App Network
     subgraph App_Network ["☁️ Rede: app_network (172.18.x.x)"]
         direction TB
-        EvolAPI[📱 Evolution API<br/>(Porta: 8081)]:::appNet
-        MinIO[🗄️ MinIO S3<br/>(Porta: 9004/9005)]:::appNet
+        EvolAPI[📱 Evolution API (Porta: 8081)]:::appNet
+        MinIO[🗄️ MinIO S3 (Porta: 9004/9005)]:::appNet
         RedisEvol[(Redis Evol)]:::db
         PostgresEvol[(Postgres Evol)]:::db
     end
@@ -61,9 +61,9 @@ graph TD
     %% Subgraph: ITSM Network
     subgraph ITSM_Network ["🏢 Rede: itsm_shared_net (172.19.x.x)"]
         direction TB
-        GLPI[🛠️ GLPI<br/>(Porta: 18080)]:::itsmNet
-        Zabbix[chart_with_upwards_trend: Zabbix Server/Web<br/>(Porta: 18081)]:::itsmNet
-        Chatwoot[💬 Chatwoot<br/>(Porta: 3000)]:::itsmNet
+        GLPI[🛠️ GLPI (Porta: 18080)]:::itsmNet
+        Zabbix[📈 Zabbix Server/Web (Porta: 18081)]:::itsmNet
+        Chatwoot[💬 Chatwoot (Porta: 3000)]:::itsmNet
         
         %% Bancos de Dados ITSM
         MariaDB[(MariaDB GLPI)]:::db
@@ -73,7 +73,7 @@ graph TD
     end
 
     %% O Hub Central (n8n) conecta as duas redes
-    n8n[⚡ n8n Workflow<br/>(Porta: 5678)]:::external
+    n8n[⚡ n8n Workflow (Porta: 5678)]:::external
     PostgresN8N[(Postgres n8n)]:::db
 
     %% Conexões Externas

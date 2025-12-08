@@ -19,6 +19,7 @@ services:
 
   web:
     <<: *base
+    profiles: []
     container_name: chatwoot_web
     restart: always
     depends_on:
@@ -39,6 +40,7 @@ services:
 
   worker:
     <<: *base
+    profiles: []
     container_name: chatwoot_worker
     restart: always
     depends_on:
