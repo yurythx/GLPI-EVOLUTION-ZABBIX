@@ -40,30 +40,30 @@ graph TD
     classDef db fill:#fff3e0,stroke:#ef6c00,stroke-width:1px;
 
     %% Atores Externos
-    User((Usuário / Admin)):::external
-    Customer((Cliente WhatsApp)):::external
+    User(("Usuário / Admin")):::external
+    Customer(("Cliente WhatsApp")):::external
 
     %% Subgraph: Stack Network
     subgraph Stack_Network ["☁️ Rede Unificada: stack_network"]
         direction TB
         
         %% Serviços
-        EvolAPI[📱 Evolution API<br/>(Porta: 8081)]:::internal
-        MinIO[🗄️ MinIO S3<br/>(Porta: 9004/9005)]:::internal
-        n8n[⚡ n8n Workflow<br/>(Porta: 5678)]:::internal
-        GLPI[🛠️ GLPI<br/>(Porta: 18080)]:::internal
-        Zabbix[📈 Zabbix Server/Web<br/>(Porta: 18081)]:::internal
-        Chatwoot[💬 Chatwoot<br/>(Porta: 3000)]:::internal
+        EvolAPI["📱 Evolution API<br/>(Porta: 8081)"]:::internal
+        MinIO["🗄️ MinIO S3<br/>(Porta: 9004/9005)"]:::internal
+        n8n["⚡ n8n Workflow<br/>(Porta: 5678)"]:::internal
+        GLPI["🛠️ GLPI<br/>(Porta: 18080)"]:::internal
+        Zabbix["📈 Zabbix Server/Web<br/>(Porta: 18081)"]:::internal
+        Chatwoot["💬 Chatwoot<br/>(Porta: 3000)"]:::internal
 
         %% Bancos de Dados e Cache
-        RedisEvol[(Redis Evol)]:::db
-        PostgresEvol[(Postgres Evol)]:::db
-        PostgresN8N[(Postgres n8n)]:::db
-        RedisN8N[(Redis n8n)]:::db
-        MariaDB[(MariaDB GLPI)]:::db
-        PostgresZabbix[(Postgres Zabbix)]:::db
-        PostgresChat[(Postgres Chatwoot)]:::db
-        RedisChat[(Redis Chatwoot)]:::db
+        RedisEvol[("Redis Evol")]:::db
+        PostgresEvol[("Postgres Evol")]:::db
+        PostgresN8N[("Postgres n8n")]:::db
+        RedisN8N[("Redis n8n")]:::db
+        MariaDB[("MariaDB GLPI")]:::db
+        PostgresZabbix[("Postgres Zabbix")]:::db
+        PostgresChat[("Postgres Chatwoot")]:::db
+        RedisChat[("Redis Chatwoot")]:::db
     end
 
     %% Conexões Externas
