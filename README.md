@@ -45,38 +45,37 @@ graph TD
     classDef itsmNet fill:#e8f5e9,stroke:#2e7d32,stroke-width:2px,stroke-dasharray: 5 5;
     classDef db fill:#fff3e0,stroke:#ef6c00,stroke-width:1px;
 
-    %% Atores Externos
-    User((Usuário / Admin)):::external
-    Customer((Cliente WhatsApp)):::external
-
     %% Subgraph: App Network
     subgraph App_Network ["☁️ Rede: app_network (172.18.x.x)"]
         direction TB
-        EvolAPI[📱 Evolution API (Porta: 8081)]:::appNet
-        MinIO[🗄️ MinIO S3 (Porta: 9004/9005)]:::appNet
-        RedisEvol[(Redis Evol)]:::db
-        PostgresEvol[(Postgres Evol)]:::db
+        EvolAPI["📱 Evolution API (Porta: 8081)"]:::appNet
+        MinIO["🗄️ MinIO S3 (Porta: 9004/9005)"]:::appNet
+        RedisEvol[("Redis Evol")]:::db
+        PostgresEvol[("Postgres Evol")]:::db
     end
 
     %% Subgraph: ITSM Network
     subgraph ITSM_Network ["🏢 Rede: itsm_shared_net (172.19.x.x)"]
         direction TB
-        GLPI[🛠️ GLPI (Porta: 18080)]:::itsmNet
-        Zabbix[📈 Zabbix Server/Web (Porta: 18081)]:::itsmNet
-        Chatwoot[💬 Chatwoot (Porta: 3000)]:::itsmNet
+        GLPI["🛠️ GLPI (Porta: 18080)"]:::itsmNet
+        Zabbix["📈 Zabbix Server/Web (Porta: 18081)"]:::itsmNet
+        Chatwoot["💬 Chatwoot (Porta: 3000)"]:::itsmNet
         
         %% Bancos de Dados ITSM
-        MariaDB[(MariaDB GLPI)]:::db
-        PostgresZabbix[(Postgres Zabbix)]:::db
-        PostgresChat[(Postgres Chatwoot)]:::db
-        RedisChat[(Redis Chatwoot)]:::db
+        MariaDB[("MariaDB GLPI")]:::db
+        PostgresZabbix[("Postgres Zabbix")]:::db
+        PostgresChat[("Postgres Chatwoot")]:::db
+        RedisChat[("Redis Chatwoot")]:::db
     end
 
     %% O Hub Central (n8n) conecta as duas redes
-    n8n[⚡ n8n Workflow (Porta: 5678)]:::external
-    PostgresN8N[(Postgres n8n)]:::db
+    n8n["⚡ n8n Workflow (Porta: 5678)"]:::external
+    PostgresN8N[("Postgres n8n")]:::db
 
     %% Conexões Externas
+    User(("Usuário / Admin")):::external
+    Customer(("Cliente WhatsApp")):::external
+
     User -->|Acesso Web| GLPI
     User -->|Acesso Web| Zabbix
     User -->|Acesso Web| Chatwoot
@@ -100,10 +99,6 @@ graph TD
 
     GLPI --> MariaDB
     Zabbix --> PostgresZabbix
-
-    %% Associações de Rede do n8n
-    n8n --- App_Network
-    n8n --- ITSM_Network
 ```
 
 ---
