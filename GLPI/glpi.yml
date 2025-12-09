@@ -34,7 +34,7 @@ services:
         max-size: "10m"
         max-file: "3"
     ports:
-      - "0.0.0.0:18080:80"
+      - "127.0.0.1:18080:80"
     depends_on:
       - glpi-db
     environment:
