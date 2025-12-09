@@ -34,14 +34,14 @@ services:
         max-size: "10m"
         max-file: "3"
     ports:
-      - "127.0.0.1:18080:80"
+      - "18080:80"
     depends_on:
       - glpi-db
     environment:
       - GLPI_DB_HOST=glpi-db
-      - GLPI_DB_NAME=glpi_db
-      - GLPI_DB_USER=glpi_user
-      - GLPI_DB_PASSWORD=sua_senha_glpi_db
+      - GLPI_DB_NAME=${MYSQL_DATABASE}
+      - GLPI_DB_USER=${MYSQL_USER}
+      - GLPI_DB_PASSWORD=${MYSQL_PASSWORD}
       - TZ=America/Sao_Paulo
     volumes:
       - glpi_files:/var/glpi

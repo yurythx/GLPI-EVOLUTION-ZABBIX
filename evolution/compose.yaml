@@ -42,7 +42,7 @@ services:
     networks:
       - stack_network
     ports:
-      - "127.0.0.1:${EVOLUTION_PORT}:8080"
+      - "${EVOLUTION_PORT}:8080"
     volumes:
       - evolution_data:/evolution/instances
     restart: ${RESTART_POLICY}
