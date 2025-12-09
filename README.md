@@ -236,6 +236,65 @@ Após subir os containers, aguarde alguns minutos para que os bancos de dados se
 
 ---
 
+## 🛡️ Segurança e Firewall (Acesso Externo)
+
+ Para acessar as aplicações externamente (fora do servidor), você deve configurar as regras de firewall e, se não usar proxy reverso, ajustar os binds dos containers. Para **comunicação interna entre serviços**, prefira sempre os **nomes dos serviços** (DNS do Docker), evitando dependência de IPs.
+
+### 1. Portas da Stack
+
+| Aplicação | Porta Externa | Descrição |
+| :--- | :--- | :--- |
+| **Chatwoot** | `3000` | Interface Web e API |
+| **n8n** | `5678` | Editor de Workflow e Webhooks |
+| **Evolution API** | `8081` | API do WhatsApp |
+| **GLPI** | `18080` | Sistema de Chamados |
+| **Zabbix Web** | `18081` | Painel de Monitoramento |
+| **Zabbix Server** | `11051` | Recebimento de dados dos Agentes |
+| **MinIO API** | `9004` | Upload de Arquivos (S3) |
+| **MinIO Console** | `9005` | Painel de Administração de Arquivos |
+
+### 2. Comandos para Liberar no Firewall (Ubuntu/UFW)
+
+```bash
+# Habilita o firewall
+sudo ufw enable
+
+# Portas padrão
+sudo ufw allow 22/tcp
+sudo ufw allow 80/tcp
+sudo ufw allow 443/tcp
+
+# Portas da Stack
+sudo ufw allow 3000/tcp comment 'Chatwoot'
+sudo ufw allow 5678/tcp comment 'n8n'
+sudo ufw allow 8081/tcp comment 'Evolution API'
+sudo ufw allow 18080/tcp comment 'GLPI'
+sudo ufw allow 18081/tcp comment 'Zabbix Web'
+sudo ufw allow 11051/tcp comment 'Zabbix Server Trapper'
+sudo ufw allow 9004/tcp comment 'MinIO API'
+sudo ufw allow 9005/tcp comment 'MinIO Console'
+
+# Aplicar regras
+sudo ufw reload
+```
+
+**Nota para aaPanel:** Adicione estas mesmas portas em **Security > Firewall** no painel visual.
+
+### 3. Liberar Acesso Direto (Sem Proxy Reverso)
+
+Por padrão, esta stack vem configurada para **Produção Segura** (bind em `127.0.0.1`). Para acessar via IP direto (`http://192.168.0.159:PORTA`), remova a restrição de localhost rodando este comando na raiz do projeto:
+
+```bash
+# Remove "127.0.0.1:" dos arquivos compose
+find . -type f \( -name "compose.yaml" -o -name "*.yml" \) -exec sed -i 's/127.0.0.1://g' {} +
+
+# Reinicie a stack
+docker compose down
+docker compose up -d
+```
+
+---
+
 ## 🔧 Troubleshooting
 
 ### Chatwoot não mostra tela de cadastro

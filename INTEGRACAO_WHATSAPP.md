@@ -71,7 +71,7 @@ Este guia detalha o processo para configurar a comunicação entre o WhatsApp (v
 
 # 📱 Esquema de Configuração da Automação (Chatwoot -> n8n)
 
-A chave do sucesso é usar o **endereço interno** (nome do serviço) para a comunicação entre containers e o **endereço externo** (192.168.29.77) onde for necessário (como na criação da URL do n8n para visualização).
+ A chave do sucesso é usar sempre o **endereço interno** (nome do serviço via DNS do Docker) para comunicação entre containers. Utilize **domínio/IP externo** apenas para acesso público pelo navegador.
 
 ---
 
@@ -95,8 +95,8 @@ O n8n precisa gerar a URL que o Chatwoot chamará.
 1.  Crie um Workflow no n8n.
 2.  Adicione o nó **Webhook**.
     *   **Method:** POST.
-    *   **Endpoint URL:** Deixe o n8n gerar a URL. Ela será similar a: `http://192.168.29.77:5678/webhook/SEU_ID_UNICO`
-    *   *Nota: O n8n usará o IP externo configurado (192.168.29.77) pois definimos `WEBHOOK_URL` no compose.*
+    *   **Endpoint URL:** Deixe o n8n gerar a URL. Ela será similar a: `http://n8n:5678/webhook/SEU_ID_UNICO`
+    *   *Nota: Para acesso externo via navegador, configure `WEBHOOK_URL`/`N8N_EDITOR_BASE_URL` com domínio público no compose.*
 
 ### 2.2. Obter a URL Interna para o Chatwoot
 A URL do passo 2.1 é a URL pública (para acesso externo). No entanto, quando configurarmos o Chatwoot, **devemos modificar o host** para usar o endereço interno do Docker:
