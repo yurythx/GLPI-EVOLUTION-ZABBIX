@@ -14,7 +14,7 @@ $content = New-Object System.Net.Http.MultipartFormDataContent
 $content.Add((New-Object System.Net.Http.StringContent('Teste MinIO via API')), 'content')
 
 $bytes = [System.IO.File]::ReadAllBytes($filePath)
-$fileContent = New-Object System.Net.Http.ByteArrayContent($bytes)
+$fileContent = New-Object System.Net.Http.ByteArrayContent($bytes, 0, $bytes.Length)
 $fileContent.Headers.ContentType = [System.Net.Http.Headers.MediaTypeHeaderValue]::Parse('text/plain')
 $content.Add($fileContent, 'attachments[]', 'sample_upload.txt')
 
