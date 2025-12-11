@@ -1,5 +1,13 @@
 # 🚀 Stack ITSM, Monitoramento & Automação (GLPI + Zabbix + Chatwoot + Evolution API)
 
+> 🚨 **DOCUMENTAÇÃO OFICIAL DO AMBIENTE (192.168.29.71)** 🚨
+> 
+> Para detalhes específicos desta implantação, incluindo IPs, credenciais e scripts de validação, consulte o:
+> 
+> 👉 **[MANUAL DE IMPLANTAÇÃO E OPERAÇÃO](./MANUAL_DE_IMPLANTACAO.md)** 👈
+>
+> *Use o manual acima como referência primária para manutenção.*
+
 Este repositório contém a infraestrutura completa, orquestrada via Docker Compose, para uma suíte de Gestão de Serviços de TI (ITSM), Monitoramento de Infraestrutura e Atendimento Omnichannel.
 
 O projeto foi desenhado para ser modular, escalável e seguro, utilizando segmentação de redes e persistência de dados.
@@ -321,8 +329,14 @@ Se receber erro `Bind for 0.0.0.0:8080 failed: port is already allocated`, edite
 
 ---
 
-## 📲 Integração WhatsApp -> GLPI
+## 📲 Guias de Integração (Detalhado)
 
-Para configurar a automação completa de abertura de chamados via WhatsApp, consulte o guia detalhado que preparamos. Ele cobre desde a conexão do número na Evolution API até a criação de Webhooks no n8n.
+Para configurar a automação completa e o armazenamento de arquivos, consulte os guias dedicados:
 
-👉 **[Clique aqui para acessar o Guia de Integração: WhatsApp (Evolution API) -> Chatwoot -> n8n -> GLPI](./INTEGRACAO_WHATSAPP.md)**
+1.  **Integração de Mensagens (Fluxo Principal)**:
+    *   Cobre desde a conexão do número na Evolution API até a criação de Webhooks no n8n.
+    *   👉 **[Guia: WhatsApp (Evolution API) -> Chatwoot -> n8n -> GLPI](./INTEGRACAO_WHATSAPP.md)**
+
+2.  **Integração de Armazenamento (MinIO)**:
+    *   Configuração do S3 para salvar anexos do Chatwoot no MinIO local.
+    *   👉 **[Guia: Chatwoot + MinIO (S3)](./INTEGRACAO_CHATWOOT_MINIO.md)**

@@ -1,0 +1,112 @@
+# Manual de Implantação e Operação
+## Stack de Atendimento e Automação: Chatwoot, Evolution API, MinIO, n8n, GLPI
+
+Este documento oficializa a configuração e o procedimento de implantação da solução integrada de atendimento via WhatsApp.
+
+**Data da Versão:** 11/12/2025
+**Status:** Produção / Validado
+**IP do Servidor (Host):** `192.168.29.71`
+
+---
+
+## 1. Visão Geral da Arquitetura
+
+A solução é composta por serviços containerizados orquestrados via Docker Compose.
+
+*   **Evolution API v2**: Gateway de WhatsApp. Conecta ao aparelho celular e converte mensagens em Webhooks.
+*   **Chatwoot**: Plataforma de atendimento multicanal. Recebe as mensagens da Evolution API.
+*   **MinIO**: Armazenamento de objetos (S3 Compatible). Armazena anexos e mídias do Chatwoot para persistência segura e performance.
+*   **n8n**: Ferramenta de automação de fluxo (Workflow). Intermedia regras de negócio e integração com GLPI.
+*   **GLPI**: Sistema de Service Desk (consumidor final dos tickets gerados).
+*   **Redis & Postgres**: Serviços de infraestrutura para persistência de dados e filas.
+
+---
+
+## 2. Configuração do Ambiente (IP 192.168.29.71)
+
+Esta implantação está padronizada para operar no IP `192.168.29.71`. Todas as referências internas e webhooks foram configurados para este endereço.
+
+### 2.1. Arquivos de Configuração Críticos
+
+#### A. Raiz `.env`
+Controla as variáveis globais da Evolution API e URLs base.
+*   **SERVER_URL**: `http://192.168.29.71:8081`
+
+#### B. `Chatwoot/.env`
+Controla a configuração do Chatwoot, incluindo conexão com banco, Redis e **MinIO**.
+*   **FRONTEND_URL**: `http://192.168.29.71:3000`
+*   **Storage (S3/MinIO)**: Configurado com estratégia de "Variáveis Duplas" (`AWS_*` e `STORAGE_*`) para garantir compatibilidade total.
+    *   Endpoint: `http://192.168.29.71:9004`
+    *   Bucket: `chatwoot`
+    *   Force Path Style: `true`
+
+#### C. `n8n/compose.yaml`
+Define as URLs de callback para os webhooks do n8n.
+*   **WEBHOOK_URL**: `http://192.168.29.71:5678/`
+*   **N8N_EDITOR_BASE_URL**: `http://192.168.29.71:5678/`
+
+---
+
+## 3. Procedimento de Implantação (Deploy)
+
+Para subir o ambiente completo (ou reiniciar após alterações de IP):
+
+1.  **Parar containers antigos (Limpeza):**
+    ```powershell
+    docker compose down
+    ```
+
+2.  **Verificar configurações:**
+    Certifique-se de que os arquivos `.env` citados acima contenham o IP correto (`192.168.29.71`).
+
+3.  **Iniciar a Stack:**
+    ```powershell
+    docker compose up -d
+    ```
+
+4.  **Aguardar Inicialização:**
+    Os serviços `evolution_api` e `chatwoot_web` podem levar de 1 a 2 minutos para ficarem totalmente operacionais (migrações de banco, etc).
+
+---
+
+## 4. Validação e Testes (Scripts Automatizados)
+
+Para garantir que a integração está 100% funcional, utilize os scripts PowerShell localizados na pasta `scripts/`.
+
+### 4.1. Teste de Armazenamento (MinIO)
+Valida se o Chatwoot consegue salvar e recuperar arquivos.
+*   **Script:** `scripts/test_minio_connection.ps1`
+*   **Resultado Esperado:** XML listando os buckets do MinIO.
+
+### 4.2. Teste de Integração Chatwoot <-> MinIO
+Simula o upload de um anexo e verifica se a URL gerada redireciona corretamente.
+*   **Script:** `scripts/upload_to_conversation_httpclient.ps1`
+*   **Script:** `scripts/check_single_redirect.ps1` (necessita URL gerada no passo anterior)
+
+### 4.3. Teste de Webhooks
+Verifica se o n8n e Chatwoot estão respondendo.
+*   **Script:** `scripts/check_n8n.ps1`
+*   **Script:** `scripts/check_webhooks.ps1`
+
+---
+
+## 5. Guias Detalhados
+
+Para configurações específicas e aprofundadas de cada componente, consulte os guias dedicados:
+
+*   📄 **[INTEGRACAO_CHATWOOT_MINIO.md](INTEGRACAO_CHATWOOT_MINIO.md)**: Detalha a configuração do armazenamento S3, solução de problemas de upload e variáveis de ambiente específicas do MinIO.
+*   📄 **[INTEGRACAO_WHATSAPP.md](INTEGRACAO_WHATSAPP.md)**: Explica o fluxo da mensagem (Evolution -> Chatwoot -> n8n), configuração de Webhooks e criação de inboxes.
+
+---
+
+## 6. Manutenção Futura
+
+### Mudança de IP
+Caso o servidor mude de IP novamente (ex: de `192.168.29.71` para outro), execute o processo de **Search & Replace** em todo o projeto, focando nos arquivos listados na seção 2.1.
+Não esqueça de atualizar também os scripts na pasta `scripts/` para que os testes continuem válidos.
+
+### Backup
+Recomenda-se backup periódico dos volumes Docker, especialmente:
+*   `pg_data` (Banco de dados PostgreSQL)
+*   `redis_data` (Filas do Redis)
+*   `minio_data` (Arquivos e Anexos)
