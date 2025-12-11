@@ -25,7 +25,7 @@ $workflowBody = '{
 
 try {
   Write-Host "Criando workflow no n8n..."
-  $resp = Invoke-RestMethod -Uri "http://192.168.0.159:5678/rest/workflows" -Method Post -Headers $headers -Body $workflowBody
+  $resp = Invoke-RestMethod -Uri "http://192.168.29.71:5678/rest/workflows" -Method Post -Headers $headers -Body $workflowBody
   Write-Host "Workflow criado com sucesso!"
   $resp | ConvertTo-Json -Depth 6 | Write-Output
 } catch {

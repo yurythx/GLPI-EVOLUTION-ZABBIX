@@ -1,7 +1,7 @@
 $ErrorActionPreference = 'Stop'
 $cid = 2
 $token = 'CDuFU9XcuoXTF7uHarDFWCw3'
-$url = "http://192.168.0.159:3000/api/v1/accounts/1/conversations/$cid/messages"
+$url = "http://192.168.29.71:3000/api/v1/accounts/1/conversations/$cid/messages"
 $filePath = Join-Path $PSScriptRoot 'sample_upload.txt'
 if (-not (Test-Path $filePath)) { throw "Arquivo nao encontrado: $filePath" }
 

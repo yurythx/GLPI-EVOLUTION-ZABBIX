@@ -4,7 +4,7 @@ $accessKey = 'minioadmin'
 $secretKey = 'minioadmin'
 $region = 'us-east-1'
 $service = 's3'
-$endpoint = 'http://192.168.0.159:9004'
+$endpoint = 'http://192.168.29.71:9004'
 
 # Function to calculate HMAC-SHA256
 function Get-HmacSha256 {
@@ -29,7 +29,7 @@ $dateStamp = $date.ToUniversalTime().ToString("yyyyMMdd")
 $method = 'GET'
 $canonicalUri = '/'
 $canonicalQueryString = ''
-$canonicalHeaders = "host:192.168.0.159:9004`nx-amz-content-sha256:e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855`nx-amz-date:$amzDate`n"
+$canonicalHeaders = "host:192.168.29.71:9004`nx-amz-content-sha256:e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855`nx-amz-date:$amzDate`n"
 $signedHeaders = 'host;x-amz-content-sha256;x-amz-date'
 $payloadHash = 'e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855' # Empty payload hash
 $canonicalRequest = "$method`n$canonicalUri`n$canonicalQueryString`n$canonicalHeaders`n$signedHeaders`n$payloadHash"

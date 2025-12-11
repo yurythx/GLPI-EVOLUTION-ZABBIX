@@ -5,7 +5,7 @@ $headers = @{
 
 try {
     Write-Host "Verificando token no Chatwoot (http://localhost:3000)..."
-    $response = Invoke-RestMethod -Uri "http://192.168.0.159:3000/api/v1/accounts/1" -Method Get -Headers $headers
+    $response = Invoke-RestMethod -Uri "http://192.168.29.71:3000/api/v1/accounts/1" -Method Get -Headers $headers
     Write-Host "Sucesso! Token valido."
     Write-Output $response
 } catch {

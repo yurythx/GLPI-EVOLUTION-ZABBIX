@@ -1,6 +1,6 @@
 $ErrorActionPreference = 'Stop'
 
-$baseUrl = 'http://192.168.0.159:3000'
+$baseUrl = 'http://192.168.29.71:3000'
 $accountId = 1
 $token = 'CDuFU9XcuoXTF7uHarDFWCw3'
 $headers = @{ 'api_access_token' = $token }

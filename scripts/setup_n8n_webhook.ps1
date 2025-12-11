@@ -6,7 +6,7 @@ $headers = @{
 $jsonBody = '{
     "webhook": {
         "enabled": true,
-        "url": "http://192.168.0.159:5678/webhook/evolution",
+        "url": "http://192.168.29.71:5678/webhook/evolution",
         "byEvents": false,
         "base64": false,
         "events": [
@@ -34,7 +34,7 @@ $jsonBody = '{
 try {
     Write-Host "Configurando Webhook da Evolution para o n8n (Instancia: Havoc)..."
     # Nota: Endpoint pode variar conforme versao da Evolution. Tentando /webhook/set/Havoc
-    $response = Invoke-RestMethod -Uri "http://192.168.0.159:8081/webhook/set/Havoc" -Method Post -Headers $headers -Body $jsonBody
+    $response = Invoke-RestMethod -Uri "http://192.168.29.71:8081/webhook/set/Havoc" -Method Post -Headers $headers -Body $jsonBody
     Write-Host "Webhook configurado com sucesso!"
     Write-Output $response
 } catch {

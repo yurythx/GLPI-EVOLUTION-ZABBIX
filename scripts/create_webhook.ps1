@@ -5,7 +5,7 @@ $headers = @{
 
 $jsonBody = '{
     "webhook": {
-        "url": "http://192.168.0.159:8081/chatwoot/webhook/Havoc",
+        "url": "http://192.168.29.71:8081/chatwoot/webhook/Havoc",
         "subscriptions": [
             "conversation_status_changed", 
             "conversation_updated", 
@@ -17,7 +17,7 @@ $jsonBody = '{
 
 try {
     Write-Host "Criando webhook no Chatwoot..."
-    $response = Invoke-RestMethod -Uri "http://192.168.0.159:3000/api/v1/accounts/1/webhooks" -Method Post -Headers $headers -Body $jsonBody
+    $response = Invoke-RestMethod -Uri "http://192.168.29.71:3000/api/v1/accounts/1/webhooks" -Method Post -Headers $headers -Body $jsonBody
     Write-Host "Webhook criado com sucesso!"
     Write-Output $response
 } catch {

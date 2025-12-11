@@ -7,7 +7,7 @@ $jsonBody = '{
     "enabled": true,
     "accountId": "1",
     "token": "CDuFU9XcuoXTF7uHarDFWCw3",
-    "url": "http://192.168.0.159:3000",
+    "url": "http://192.168.29.71:3000",
     "signMsg": true,
     "reopenConversation": true,
     "conversationPending": false,
@@ -27,7 +27,7 @@ Write-Host $jsonBody
 
 try {
     Write-Host "Enviando requisicao para configurar integracao Chatwoot na instancia Havoc..."
-    $response = Invoke-RestMethod -Uri "http://192.168.0.159:8081/chatwoot/set/Havoc" -Method Post -Headers $headers -Body $jsonBody
+    $response = Invoke-RestMethod -Uri "http://192.168.29.71:8081/chatwoot/set/Havoc" -Method Post -Headers $headers -Body $jsonBody
     Write-Host "Integracao configurada com sucesso!"
     Write-Output $response
 } catch {

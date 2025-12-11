@@ -282,7 +282,7 @@ sudo ufw reload
 
 ### 3. Liberar Acesso Direto (Sem Proxy Reverso)
 
-Por padrão, esta stack vem configurada para **Produção Segura** (bind em `127.0.0.1`). Para acessar via IP direto (`http://192.168.0.159:PORTA`), remova a restrição de localhost rodando este comando na raiz do projeto:
+Por padrão, esta stack vem configurada para **Produção Segura** (bind em `127.0.0.1`). Para acessar via IP direto (`http://192.168.29.71:PORTA`), remova a restrição de localhost rodando este comando na raiz do projeto:
 
 ```bash
 # Remove "127.0.0.1:" dos arquivos compose

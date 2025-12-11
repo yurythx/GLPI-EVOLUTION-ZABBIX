@@ -1,5 +1,5 @@
 $headers = @{ 'api_access_token' = 'CDuFU9XcuoXTF7uHarDFWCw3' }
-$baseUrl = 'http://192.168.0.159:3000'
+$baseUrl = 'http://192.168.29.71:3000'
 
 try {
   $convResp = Invoke-RestMethod -Uri "$baseUrl/api/v1/accounts/1/conversations" -Headers $headers -Method Get
