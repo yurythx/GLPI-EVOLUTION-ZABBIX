@@ -42,8 +42,8 @@ Controla a configuração do Chatwoot, incluindo conexão com banco, Redis e **M
 
 #### C. `n8n/compose.yaml`
 Define as URLs de callback para os webhooks do n8n.
-*   **WEBHOOK_URL**: `http://192.168.29.71:5678/`
-*   **N8N_EDITOR_BASE_URL**: `http://192.168.29.71:5678/`
+*   **WEBHOOK_URL**: `http://n8n:5678/` (Uso interno na rede Docker)
+*   **N8N_EDITOR_BASE_URL**: `http://192.168.29.71:5678/` (Acesso via navegador)
 
 ---
 

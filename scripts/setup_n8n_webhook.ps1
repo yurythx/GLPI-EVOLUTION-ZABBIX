@@ -6,7 +6,7 @@ $headers = @{
 $jsonBody = '{
     "webhook": {
         "enabled": true,
-        "url": "http://192.168.29.71:5678/webhook/evolution",
+        "url": "http://n8n:5678/webhook/evolution",
         "byEvents": false,
         "base64": false,
         "events": [

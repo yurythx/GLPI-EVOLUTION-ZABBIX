@@ -1,0 +1,153 @@
+{
+  "name": "Chatwoot → Evolution",
+  "active": true,
+  "nodes": [
+    {
+      "parameters": {
+        "path": "n8n",
+        "options": {},
+        "responseMode": "onReceived",
+        "httpMethod": "POST",
+        "responseCode": 200
+      },
+      "id": "Webhook1",
+      "name": "Webhook",
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 1,
+      "position": [260, 300]
+    },
+    {
+      "parameters": {
+        "functionCode": "const g = this.getWorkflowStaticData('global');\nconst msg = $json;\nconst direction = msg.message_type || (msg.payload && msg.payload.message_type) || 'incoming';\nconst content = msg.content || (msg.message && msg.message.content) || (msg.payload && msg.payload.content) || '';\nconst phone = (msg.contact && msg.contact.phone_number) || (msg.sender && msg.sender.phone_number) || msg.phone || '';\nconst contactId = (msg.contact && msg.contact.id) || '';\nif (!phone) {\n  return [{ action: 'none' }];\n}\ng.contacts = g.contacts || {};\nconst c = g.contacts[phone] || { state: 'new' };\nlet action = 'none';\nlet textToSend = '';\nlet name = c.name || '';\nlet sector = c.sector || '';\nif (direction === 'incoming') {\n  if (c.state === 'new') {\n    c.state = 'awaiting_name';\n    action = 'ask_name';\n    textToSend = 'Olá! Para prosseguir, qual é o seu nome completo?';\n  } else if (c.state === 'awaiting_name') {\n    name = (content || '').trim();\n    c.name = name;\n    c.state = 'awaiting_sector';\n    action = 'ask_sector';\n    textToSend = 'Ótimo, e qual é o seu setor/secretaria?';\n  } else if (c.state === 'awaiting_sector') {\n    sector = (content || '').trim();\n    c.sector = sector;\n    c.state = 'completed';\n    action = 'complete';\n    textToSend = 'Obrigado, cadastro completo!';\n  }\n}\ng.contacts[phone] = c;\nreturn [{ action, number: phone, text: textToSend, contactId, name, sector }];"
+      },
+      "id": "FunctionState",
+      "name": "State",
+      "type": "n8n-nodes-base.function",
+      "typeVersion": 1,
+      "position": [500, 300]
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "string": [
+            { "value1": "={{$json.action}}", "operation": "equal", "value2": "ask_name" }
+          ]
+        }
+      },
+      "id": "IfAskName",
+      "name": "Ask Name?",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 1,
+      "position": [700, 200]
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "string": [
+            { "value1": "={{$json.action}}", "operation": "equal", "value2": "ask_sector" }
+          ]
+        }
+      },
+      "id": "IfAskSector",
+      "name": "Ask Sector?",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 1,
+      "position": [700, 300]
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "string": [
+            { "value1": "={{$json.action}}", "operation": "equal", "value2": "complete" }
+          ]
+        }
+      },
+      "id": "IfComplete",
+      "name": "Complete?",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 1,
+      "position": [700, 400]
+    },
+    {
+      "parameters": {
+        "url": "http://evolution_api:8081/message/send",
+        "options": {},
+        "queryParametersUi": { "parameter": [] },
+        "sendBody": true,
+        "jsonParameters": true,
+        "authentication": "none",
+        "headerParametersUi": { "parameter": [ { "name": "apikey", "value": "B8963286-1598-4542-8952-223366998855" } ] },
+        "bodyParametersJson": "={ \"number\": {{$json.number}}, \"text\": {{$json.text}}, \"instanceName\": \"Havoc\" }",
+        "method": "POST"
+      },
+      "id": "SendAskName",
+      "name": "Send Ask Name",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 3,
+      "position": [930, 200]
+    },
+    {
+      "parameters": {
+        "url": "http://evolution_api:8081/message/send",
+        "options": {},
+        "queryParametersUi": { "parameter": [] },
+        "sendBody": true,
+        "jsonParameters": true,
+        "authentication": "none",
+        "headerParametersUi": { "parameter": [ { "name": "apikey", "value": "B8963286-1598-4542-8952-223366998855" } ] },
+        "bodyParametersJson": "={ \"number\": {{$json.number}}, \"text\": {{$json.text}}, \"instanceName\": \"Havoc\" }",
+        "method": "POST"
+      },
+      "id": "SendAskSector",
+      "name": "Send Ask Sector",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 3,
+      "position": [930, 300]
+    },
+    {
+      "parameters": {
+        "url": "http://192.168.29.71:3000/api/v1/accounts/1/contacts/={{$json.contactId}}",
+        "options": {},
+        "sendBody": true,
+        "jsonParameters": true,
+        "authentication": "none",
+        "headerParametersUi": { "parameter": [ { "name": "api_access_token", "value": "CDuFU9XcuoXTF7uHarDFWCw3" } ] },
+        "bodyParametersJson": "={ \"name\": {{$json.name}}, \"custom_attributes\": { \"setor\": {{$json.sector}} } }",
+        "method": "PUT"
+      },
+      "id": "UpdateChatwoot",
+      "name": "Update Chatwoot",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 3,
+      "position": [930, 400]
+    },
+    {
+      "parameters": {
+        "url": "http://evolution_api:8081/message/send",
+        "options": {},
+        "queryParametersUi": { "parameter": [] },
+        "sendBody": true,
+        "jsonParameters": true,
+        "authentication": "none",
+        "headerParametersUi": { "parameter": [ { "name": "apikey", "value": "B8963286-1598-4542-8952-223366998855" } ] },
+        "bodyParametersJson": "={ \"number\": {{$json.number}}, \"text\": {{$json.text}}, \"instanceName\": \"Havoc\" }",
+        "method": "POST"
+      },
+      "id": "SendCompleted",
+      "name": "Send Completed",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 3,
+      "position": [1150, 400]
+    }
+  ],
+  "connections": {
+    "Webhook": { "main": [[{ "node": "State", "type": "main", "index": 0 }]] },
+    "State": { "main": [[{ "node": "Ask Name?", "type": "main", "index": 0 }], [{ "node": "Ask Sector?", "type": "main", "index": 0 }], [{ "node": "Complete?", "type": "main", "index": 0 }]] },
+    "Ask Name?": { "main": [[{ "node": "Send Ask Name", "type": "main", "index": 0 }], []] },
+    "Ask Sector?": { "main": [[{ "node": "Send Ask Sector", "type": "main", "index": 0 }], []] },
+    "Complete?": { "main": [[{ "node": "Update Chatwoot", "type": "main", "index": 0 }], []] },
+    "Update Chatwoot": { "main": [[{ "node": "Send Completed", "type": "main", "index": 0 }]] }
+  },
+  "settings": {},
+  "staticData": {}
+}

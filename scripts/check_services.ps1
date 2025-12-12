@@ -5,9 +5,9 @@ $ErrorActionPreference = 'SilentlyContinue'
 
 # Configurações
 $ip = "192.168.29.71"
-$chatwootUrl = "http://$ip` :3000"
-$n8nUrl = "http://$ip` :5678"
-$evolutionUrl = "http://$ip` :8081"
+$chatwootUrl = "http://${ip}:3000"
+$n8nUrl = "http://${ip}:5678"
+$evolutionUrl = "http://${ip}:8081"
 
 $chatwootToken = "CDuFU9XcuoXTF7uHarDFWCw3"
 $evolutionKey = "B8963286-1598-4542-8952-223366998855"
@@ -47,9 +47,12 @@ try {
     # Verificar Webhooks
     Write-Host "`nVerificando Webhooks configurados..."
     $hooks = Invoke-RestMethod -Uri "$chatwootUrl/api/v1/accounts/1/webhooks" -Method Get -Headers $headers
-    if ($hooks.payload.count -gt 0) {
-        foreach ($h in $hooks.payload) {
-            Write-Host " - Webhook: $($h.url)" -ForegroundColor Gray
+    
+    # Payload returns { "webhooks": [ ... ] }
+    if ($hooks.payload.webhooks) {
+        $hookList = @($hooks.payload.webhooks)
+        foreach ($h in $hookList) {
+            Write-Host " - Webhook (ID: $($h.id)): $($h.url)" -ForegroundColor Gray
         }
     } else {
         Write-Host " - Nenhum webhook encontrado." -ForegroundColor Yellow
@@ -68,7 +71,7 @@ try {
     
     if ($resp.Count -gt 0) {
         foreach ($inst in $resp) {
-            Write-Host " - Instância: $($inst.instance.instanceName) | Status: $($inst.instance.status)" -ForegroundColor Gray
+            Write-Host " - Instância: $($inst.name) | Status: $($inst.connectionStatus)" -ForegroundColor Gray
         }
     } else {
         Write-Host " - Nenhuma instância encontrada." -ForegroundColor Yellow
