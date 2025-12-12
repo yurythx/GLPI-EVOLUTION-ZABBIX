@@ -73,20 +73,15 @@ Para subir o ambiente completo (ou reiniciar após alterações de IP):
 
 Para garantir que a integração está 100% funcional, utilize os scripts PowerShell localizados na pasta `scripts/`.
 
-### 4.1. Teste de Armazenamento (MinIO)
-Valida se o Chatwoot consegue salvar e recuperar arquivos.
-*   **Script:** `scripts/test_minio_connection.ps1`
-*   **Resultado Esperado:** XML listando os buckets do MinIO.
+### 4.1. Diagnóstico Geral
+Verifica o status de todos os serviços (n8n, Chatwoot, Evolution) e lista instâncias/webhooks.
+*   **Script:** `scripts/check_services.ps1`
+*   **Resultado Esperado:** Relatório verde com "STATUS: ONLINE" para todos os serviços.
 
-### 4.2. Teste de Integração Chatwoot <-> MinIO
-Simula o upload de um anexo e verifica se a URL gerada redireciona corretamente.
-*   **Script:** `scripts/upload_to_conversation_httpclient.ps1`
-*   **Script:** `scripts/check_single_redirect.ps1` (necessita URL gerada no passo anterior)
-
-### 4.3. Teste de Webhooks
-Verifica se o n8n e Chatwoot estão respondendo.
-*   **Script:** `scripts/check_n8n.ps1`
-*   **Script:** `scripts/check_webhooks.ps1`
+### 4.2. Teste de Armazenamento (End-to-End)
+Cria uma conversa, faz upload de anexo e valida se o Chatwoot redireciona corretamente para o MinIO (Porta 9004).
+*   **Script:** `scripts/test_storage_integration.ps1`
+*   **Resultado Esperado:** Mensagem "Redirecionamento OK!" e URL apontando para `:9004`.
 
 ---
 
