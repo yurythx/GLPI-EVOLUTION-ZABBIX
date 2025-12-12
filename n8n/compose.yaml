@@ -12,7 +12,6 @@ services:
     volumes:
       - n8n_data:/home/node/.n8n
       - tmp_data:/home/n8n/.tmp
-      - ./n8n/workflows:/workflows
     networks:
       - stack_network
     logging:
@@ -38,8 +37,6 @@ services:
       # WEBHOOK_URL: https://n8n.projetohavoc.shop/
       WEBHOOK_URL: http://n8n:5678/
       N8N_EDITOR_BASE_URL: http://192.168.29.71:5678/
-      N8N_IMPORT_FILE: /workflows/chatwoot_evolution.json
-      N8N_IMPORT_OVERWRITE: 'true'
       N8N_BASIC_AUTH_ACTIVE: ${N8N_BASIC_AUTH_ACTIVE}
       N8N_BASIC_AUTH_USER: ${N8N_BASIC_AUTH_USER}
       N8N_BASIC_AUTH_PASSWORD: ${N8N_BASIC_AUTH_PASSWORD}
