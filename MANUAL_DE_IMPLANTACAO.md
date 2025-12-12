@@ -90,6 +90,7 @@ Cria uma conversa, faz upload de anexo e valida se o Chatwoot redireciona corret
 Para configurações específicas e aprofundadas de cada componente, consulte os guias dedicados:
 
 *   📄 **[INTEGRACAO_CHATWOOT_MINIO.md](INTEGRACAO_CHATWOOT_MINIO.md)**: Detalha a configuração do armazenamento S3, solução de problemas de upload e variáveis de ambiente específicas do MinIO.
+*   📄 **[INTEGRACAO_CHATWOOT_N8N.md](INTEGRACAO_CHATWOOT_N8N.md)**: Guia para configuração de Webhooks entre Chatwoot e n8n (Rede Interna Docker) e solução para validação de URL.
 *   📄 **[INTEGRACAO_WHATSAPP.md](INTEGRACAO_WHATSAPP.md)**: Explica o fluxo da mensagem (Evolution -> Chatwoot -> n8n), configuração de Webhooks e criação de inboxes.
 
 ---
