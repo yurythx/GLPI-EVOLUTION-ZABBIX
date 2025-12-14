@@ -41,8 +41,7 @@ services:
       - CACHE_LOCAL_ENABLED=${CACHE_LOCAL_ENABLED}
     networks:
       - stack_network
-    ports:
-      - "${EVOLUTION_PORT}:8080"
+    ports: []
     volumes:
       - evolution_data:/evolution/instances
     restart: ${RESTART_POLICY}
@@ -65,6 +64,39 @@ services:
       timeout: 10s
       retries: 3
       start_period: 60s
+
+  evolution_proxy:
+    image: nginx:alpine
+    container_name: evolution_proxy
+    depends_on:
+      evolution_api:
+        condition: service_healthy
+    ports:
+      - "8081:80"
+    volumes:
+      - ./nginx.conf:/etc/nginx/conf.d/default.conf:ro
+    networks:
+      - stack_network
+    restart: always
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "10m"
+        max-file: "3"
+    deploy:
+      resources:
+        limits:
+          cpus: '0.5'
+          memory: 256M
+        reservations:
+          cpus: '0.1'
+          memory: 64M
+    healthcheck:
+      test: ["CMD", "wget", "-q", "-O", "-", "http://localhost/manager/health" ]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 30s
 
   postgres_evolution:
     image: postgres:16
