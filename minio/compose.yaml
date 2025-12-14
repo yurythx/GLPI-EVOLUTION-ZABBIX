@@ -10,6 +10,8 @@ services:
       MINIO_ROOT_USER: ${MINIO_ROOT_USER}
       MINIO_ROOT_PASSWORD: ${MINIO_ROOT_PASSWORD}
       MINIO_API_CORS_ALLOW_ORIGIN: "*"
+      MINIO_SERVER_URL: https://minio.projetohavoc.shop
+      MINIO_BROWSER_REDIRECT_URL: https://minio.projetohavoc.shop
     volumes:
       - s3_data:/data
     logging:
@@ -19,6 +21,11 @@ services:
         max-file: "3"
     networks:
       - stack_network
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:9000/minio/health/ready" ]
+      interval: 30s
+      timeout: 10s
+      retries: 5
 
   createbuckets:
     image: minio/mc:latest
